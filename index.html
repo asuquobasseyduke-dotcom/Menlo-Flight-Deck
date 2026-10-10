@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Menlo House — Flight Deck Command System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .completed-task { opacity: 0.5; text-decoration: line-through; }
+        .modal-bg { background-color: rgba(15, 23, 42, 0.75); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 font-sans min-h-screen pb-12">
+
+    <!-- TOP HEADER / COMMAND DECK BAR -->
+    <header class="bg-slate-800 border-b border-slate-700 sticky top-0 z-30 shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center space-x-3">
+                <div class="bg-indigo-600 text-white p-2.5 rounded-lg shadow-md">
+                    <i class="fa-solid fa-plane-departure text-xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold tracking-wide text-white">MENLO HOUSE FLIGHT DECK</h1>
+                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Operational Command & Governance</p>
+                </div>
+            </div>
+
+            <!-- TL CONTROLS & DATE DISPLAY -->
+            <div class="flex items-center space-x-3">
+                <div class="bg-slate-700/60 px-3 py-1.5 rounded-md border border-slate-600 text-right">
+                    <div id="current-date" class="text-sm font-semibold text-slate-200">Monday, 12 Oct 2026</div>
+                    <div id="shift-leader" class="text-xs text-emerald-400 font-mono">TL: Asuquo Duke</div>
+                </div>
+                <button onclick="openRosterModal()" class="bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-user-gear text-sm"></i> Manage Roster / Sick Calls
+                </button>
+                <button onclick="resetShiftData()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium text-xs px-2.5 py-2 rounded-lg transition border border-slate-600" title="Reset Shift Checkbox State">
+                    <i class="fa-solid fa-rotate-right"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN DASHBOARD CONTENT -->
+    <main class="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+
+        <!-- LEFT SIDEBAR: ON-DUTY STAFF & GOVERNANCE TARGETS -->
+        <div class="lg:col-span-1 space-y-6">
+
+            <!-- ON-DUTY STAFF CARD -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-md">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
+                        <i class="fa-solid fa-users text-indigo-400"></i> Floor Staff On-Duty
+                    </h2>
+                    <span id="active-staff-count" class="bg-indigo-900/80 text-indigo-200 text-xs px-2 py-0.5 rounded-full font-mono">3 Active</span>
+                </div>
+                <div id="staff-list-container" class="space-y-2">
+                    <!-- Dynamic Staff Badges Loaded via JS -->
+                </div>
+            </div>
+
+            <!-- TODAY'S MONTHLY GOVERNANCE CADENCE TARGET -->
+            <div class="bg-indigo-950/40 border border-indigo-800/60 rounded-xl p-4 shadow-md">
+                <div class="flex items-center gap-2 text-indigo-300 mb-2">
+                    <i class="fa-solid fa-clipboard-check text-lg"></i>
+                    <h3 class="text-sm font-bold uppercase tracking-wider">Today's Governance Cadence</h3>
+                </div>
+                <div id="governance-target-content" class="text-xs text-slate-300 space-y-2">
+                    <!-- Populated dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- MANDATORY PRIORITY DIRECTIVE -->
+            <div class="bg-rose-950/40 border border-rose-800/60 rounded-xl p-4 shadow-md">
+                <div class="flex items-center gap-2 text-rose-400 mb-2">
+                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                    <h3 class="text-sm font-bold uppercase tracking-wider">Mandatory Priority Directive</h3>
+                </div>
+                <div class="text-xs text-rose-200 leading-relaxed font-medium">
+                    <span class="text-amber-300 font-bold">🚨 PHARMACY STATEMENT OF ACCOUNT:</span> Obtain hard copy / digital statement for James (G0061) from the pharmacy today for petty cash reconciliation.
+                </div>
+            </div>
+
+            <!-- TL DESK AUDIT WINDOW ANCHORS -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-md">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> TL Desk Audit Anchors
+                </h3>
+                <ul class="text-xs space-y-2 font-mono">
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">12:00 Desk Review</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">15:00 Desk Review</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">18:00 Desk Review</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">21:00 Final Handover</span>
+                        <span class="text-emerald-400 font-bold">Audit & Sign</span>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- RIGHT / CENTER 3 COLUMNS: INTERACTIVE TASK FLIGHT DECK -->
+        <div class="lg:col-span-3 space-y-6">
+
+            <!-- TIME BLOCK NAV TABS / SHIFT FILTER -->
+            <div class="bg-slate-800 p-2 rounded-xl border border-slate-700 flex flex-wrap gap-2 shadow">
+                <button onclick="filterTasks('ALL')" id="tab-ALL" class="time-tab bg-indigo-600 text-white text-xs font-bold px-4 py-2 rounded-lg transition">All Shift Blocks</button>
+                <button onclick="filterTasks('BLOCK1')" id="tab-BLOCK1" class="time-tab bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg transition">Block 1 (08:00–12:00)</button>
+                <button onclick="filterTasks('BLOCK2')" id="tab-BLOCK2" class="time-tab bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg transition">Block 2 (12:00–16:00)</button>
+                <button onclick="filterTasks('BLOCK3')" id="tab-BLOCK3" class="time-tab bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg transition">Block 3 (16:00–20:00)</button>
+                <button onclick="filterTasks('BLOCK4')" id="tab-BLOCK4" class="time-tab bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg transition">Block 4 (20:00–22:00)</button>
+            </div>
+
+            <!-- TASK CARDS CONTAINER -->
+            <div id="tasks-container" class="space-y-4">
+                <!-- Dynamically populated via JS -->
+            </div>
+
+        </div>
+    </main>
+
+    <!-- MODAL: ROSTER & SICK CALL OVERRIDE MANAGER -->
+    <div id="roster-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl">
+            <div class="bg-slate-900 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-user-pen text-amber-400"></i> Roster & Shift Override Manager
+                </h3>
+                <button onclick="closeRosterModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto">
+                <p class="text-xs text-slate-400">Adjust staff status in real time for sick calls, late arrivals, or shift swaps. Tasks assigned to sick staff will automatically re-assign to available on-duty staff.</p>
+
+                <div id="modal-staff-list" class="space-y-3">
+                    <!-- Populated via JS -->
+                </div>
+            </div>
+            <div class="bg-slate-900 px-6 py-3 border-t border-slate-700 flex justify-end gap-3">
+                <button onclick="closeRosterModal()" class="bg-slate-700 hover:bg-slate-600 text-slate-200 text-xs font-semibold px-4 py-2 rounded-lg">Cancel</button>
+                <button onclick="saveRosterChanges()" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow">Save & Re-balance Flight Deck</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: INSTANT PRAISE & REINFORCEMENT GENERATOR -->
+    <div id="praise-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-emerald-600/60 rounded-xl w-full max-w-lg overflow-hidden shadow-2xl animate-fade-in">
+            <div class="bg-emerald-950/80 px-6 py-4 border-b border-emerald-800 flex justify-between items-center">
+                <h3 class="text-base font-bold text-emerald-200 flex items-center gap-2">
+                    <i class="fa-solid fa-circle-check text-emerald-400"></i> Task Verified & Completed
+                </h3>
+                <button onclick="closePraiseModal()" class="text-emerald-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div class="text-xs text-slate-300">
+                    <span class="text-slate-400">Completed Task:</span>
+                    <p id="praise-task-title" class="text-sm font-bold text-white mt-1"></p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-700 p-4 rounded-lg">
+                    <div class="text-xs text-amber-400 font-bold uppercase tracking-wider mb-2 flex items-center gap-1.5">
+                        <i class="fa-solid fa-bullhorn"></i> Team Leader Reinforcement Script:
+                    </div>
+                    <blockquote id="praise-script" class="text-sm text-slate-200 italic leading-relaxed">
+                        <!-- Dynamic Praise Script -->
+                    </blockquote>
+                </div>
+            </div>
+            <div class="bg-slate-900 px-6 py-3 border-t border-slate-700 flex justify-end">
+                <button onclick="closePraiseModal()" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold px-5 py-2 rounded-lg shadow">Acknowledge & Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- APPLICATION LOGIC & JAVASCRIPT -->
+    <script>
+        // MASTER LOCKED STAFF DATA (Default Shift Roster for Mon 12 Oct)
+        let staffRoster = [
+            { id: 'S1', name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'General Floor / Governance' },
+            { id: 'S2', name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
+            { id: 'S3', name: 'Alejandra Molloy', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+            { id: 'S4', name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Shift' }
+        ];
+
+        // MONTHLY GOVERNANCE CADENCE MATRIX
+        const governanceMatrix = {
+            1: "Task #10: Home Heating Oil Check & Task #12: Generator Fuel Tank Inspection.",
+            3: "Task #3: Emergency Supplies Audit (2 Heaters, 3 Torches, Blankets, Expiry Dates).",
+            5: "Task #4: Monthly Fire Drill Execution (G0061/G0057) & CMMS Sign-off.",
+            7: "Task #14: Western Hygiene Stock Audit & Order Submission.",
+            9: "Task #1: Resident House Meetings (OCC_Form_062).",
+            11: "Task #13: Resident Monthly Weights (G0061 & G0057).",
+            12: "Task #8: Medication Labels & Expiry Dates Audit.",
+            14: "Task #11: Full Medication Audit & Kardex Check.",
+            15: "Task #6: 3-Monthly Scripts & 6-Monthly Kardex Audit.",
+            16: "Task #2: Key Working Session (PDCA Goals).",
+            18: "Task #7: Indoor Window Cleaning & Task #9: Toilet Brushes Replacement.",
+            20: "Task #5: Folders & Documentation Audit.",
+            21: "Task #15: Petty Cash & Receipts Submission to Accounts."
+        };
+
+        // MASTER LOCKED TASKS DATA (Menlo House Master Schedules for G0061 & G0057)
+        let masterTasks = [
+            // BLOCK 1: 08:00 - 12:00
+            { id: 'T1', block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Administer Pantoprazole & Medikinet while James is in bed.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T2', block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack Meds', desc: 'Administer Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T3', block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'Greet using preferred high-five / palm slap. Prompt hygiene & administer Kardex meds.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T4', block: 'BLOCK1', time: '09:00', title: 'James (G0061) Intimate Care & Porridge', desc: 'Prepare porridge with Digestive Enzymes. Support toilet, shower, shave, and change.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T5', block: 'BLOCK1', time: '10:00', title: 'Matthew (G0057) Morning Choice Offer', desc: 'Offer visual choice cues (Day Service, local walk, car spin). Respect NO immediately.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T6', block: 'BLOCK1', time: '10:30', title: '🚨 Pharmacy Statement Collection', desc: 'Visit/call pharmacy to collect official Statement of Account for James (G0061).', resident: 'General', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T7', block: 'BLOCK1', time: '11:00', title: 'Monthly Governance Task #10 & #12', desc: 'Inspect Home Heating Oil levels and Generator Fuel Tank volume.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false },
+
+            // BLOCK 2: 12:00 - 16:00
+            { id: 'T8', block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T9', block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Administer Digestive Enzymes immediately prior to lunch. Log Movicol/fluid.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T10', block: 'BLOCK2', time: '13:00', title: 'Matthew (G0057) Lunch & Fluid Log', desc: 'Support lunch in apartment or community. Record fluid/nutritional details.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T11', block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Provide uninterrupted quiet period for tablet engagement, sensory room, or nap.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T12', block: 'BLOCK2', time: '15:00', title: 'James (G0061) Afternoon Movicol Check', desc: 'Prepare 2nd Movicol (2 sachets in 1/2L water if no bowel movement).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+
+            // BLOCK 3: 16:00 - 20:00
+            { id: 'T13', block: 'BLOCK3', time: '16:30', title: 'Matthew (G0057) Late Afternoon Spin', desc: 'Offer secondary spin/outing choice. Respond promptly if he points home.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T14', block: 'BLOCK3', time: '17:00', title: 'James (G0061) 17:00 Evening Meds', desc: 'Administer Medikinet, Domeridle, Desunin, Olanzapine, & Pantoprazole (17:30).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T15', block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T16', block: 'BLOCK3', time: '18:30', title: 'Matthew (G0057) Dinner & Unwind', desc: 'Facilitate person-centered dinner in apartment. Support low-arousal YouTube relaxation.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+
+            // BLOCK 4: 20:00 - 22:00
+            { id: 'T17', block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Administer night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+            { id: 'T18', block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Administer Kardex evening meds with fluids. Support pajamas transition.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+            { id: 'T19', block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Complete progress notes for G0061 & G0057. Execute 2-minute desk reset and WhatsApp updates.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false }
+        ];
+
+        let currentFilter = 'ALL';
+
+        // INITIALIZATION
+        window.addEventListener('DOMContentLoaded', () => {
+            loadSavedState();
+            renderStaffList();
+            renderGovernanceTarget();
+            renderTasks();
+        });
+
+        // RENDER STAFF LIST
+        function renderStaffList() {
+            const container = document.getElementById('staff-list-container');
+            container.innerHTML = '';
+
+            const activeStaff = staffRoster.filter(s => s.status === 'ON_DUTY');
+            document.getElementById('active-staff-count').innerText = `${activeStaff.length} On Floor`;
+
+            staffRoster.forEach(staff => {
+                let badgeColor = 'bg-slate-700 text-slate-300';
+                let statusText = staff.status;
+
+                if (staff.status === 'ON_DUTY') {
+                    badgeColor = 'bg-emerald-950/80 border-emerald-700 text-emerald-200';
+                    statusText = 'On Duty';
+                } else if (staff.status === 'SICK') {
+                    badgeColor = 'bg-rose-950/80 border-rose-700 text-rose-300';
+                    statusText = 'Sick / Off';
+                } else if (staff.status === 'NIGHT_DUTY') {
+                    badgeColor = 'bg-indigo-950/80 border-indigo-700 text-indigo-200';
+                    statusText = 'Night Duty';
+                }
+
+                container.innerHTML += `
+                    <div class="p-2.5 rounded-lg border ${badgeColor} flex justify-between items-center text-xs">
+                        <div>
+                            <div class="font-bold">${staff.name}</div>
+                            <div class="text-[10px] text-slate-400">${staff.role} • ${staff.resident}</div>
+                        </div>
+                        <span class="font-mono text-[10px] uppercase font-bold px-1.5 py-0.5 rounded bg-slate-900/60">${statusText}</span>
+                    </div>
+                `;
+            });
+        }
+
+        // RENDER GOVERNANCE TARGET
+        function renderGovernanceTarget() {
+            const todayDay = 1; // Mon Oct 12 corresponds to Day 1 Cadence
+            const target = governanceMatrix[todayDay] || "Folder standards & daily iPlanit compliance check.";
+            document.getElementById('governance-target-content').innerHTML = `
+                <div class="font-bold text-amber-300">Day ${todayDay} Target:</div>
+                <p class="leading-relaxed">${target}</p>
+            `;
+        }
+
+        // RENDER TASKS WITH DYNAMIC STAFF RE-ALLOCATION
+        function renderTasks() {
+            const container = document.getElementById('tasks-container');
+            container.innerHTML = '';
+
+            const filteredTasks = currentFilter === 'ALL' 
+                ? masterTasks 
+                : masterTasks.filter(t => t.block === currentFilter);
+
+            if (filteredTasks.length === 0) {
+                container.innerHTML = `<div class="bg-slate-800 p-8 rounded-xl text-center text-slate-400 text-xs">No tasks found for this shift block.</div>`;
+                return;
+            }
+
+            filteredTasks.forEach(task => {
+                // Determine assigned staff (Re-allocate if default staff is sick)
+                let assignedStaffName = task.defaultStaff;
+                let staffObj = staffRoster.find(s => s.name === task.defaultStaff);
+
+                if (staffObj && staffObj.status === 'SICK') {
+                    // Reassign to available ON_DUTY staff
+                    const available = staffRoster.filter(s => s.status === 'ON_DUTY');
+                    if (available.length > 0) {
+                        assignedStaffName = `${available[0].name} (Re-assigned)`;
+                    } else {
+                        assignedStaffName = 'Unassigned (TL Cover)';
+                    }
+                }
+
+                const completedClass = task.completed ? 'completed-task bg-slate-900/40' : 'bg-slate-800 hover:border-slate-600';
+                const checkBtnColor = task.completed ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-emerald-600 text-slate-300 hover:text-white';
+
+                container.innerHTML += `
+                    <div class="border border-slate-700 rounded-xl p-4 transition shadow ${completedClass} flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div class="flex items-start gap-3">
+                            <span class="bg-indigo-950 text-indigo-300 border border-indigo-800 font-mono text-xs font-bold px-2 py-1 rounded-md mt-0.5">${task.time}</span>
+                            <div>
+                                <div class="flex items-center gap-2">
+                                    <h4 class="text-sm font-bold text-white">${task.title}</h4>
+                                    <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-700 text-slate-300">${task.resident}</span>
+                                </div>
+                                <p class="text-xs text-slate-300 mt-1">${task.desc}</p>
+                                <div class="text-[11px] text-indigo-400 font-medium mt-2 flex items-center gap-1">
+                                    <i class="fa-solid fa-user text-[10px]"></i> Assigned: <span class="text-slate-200 font-bold">${assignedStaffName}</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-center gap-2 self-end md:self-center">
+                            <button onclick="toggleTask('${task.id}')" class="${checkBtnColor} font-bold text-xs px-4 py-2 rounded-lg transition flex items-center gap-2 shadow">
+                                <i class="fa-solid ${task.completed ? 'fa-circle-check' : 'fa-check'}"></i>
+                                ${task.completed ? 'Completed' : 'Sign Off'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // TOGGLE TASK COMPLETION & TRIGGER PRAISE MODAL
+        function toggleTask(taskId) {
+            const task = masterTasks.find(t => t.id === taskId);
+            if (!task) return;
+
+            task.completed = !task.completed;
+            saveState();
+            renderTasks();
+
+            if (task.completed) {
+                showPraiseModal(task);
+            }
+        }
+
+        // SHOW INSTANT PRAISE MODAL
+        function showPraiseModal(task) {
+            document.getElementById('praise-task-title').innerText = `${task.time} — ${task.title}`;
+
+            let assignedName = task.defaultStaff;
+            const scripts = [
+                `"Thanks ${assignedName}, getting that ${task.title} signed off on time keeps our HIQA compliance completely watertight!"`,
+                `"Brilliant work ${assignedName}, I really appreciate your prompt attention to ${task.title}—great operational flow today!"`,
+                `"Super helpful ${assignedName}, handling ${task.title} so smoothly makes a massive difference for the whole shift!"`
+            ];
+
+            const randomScript = scripts[Math.floor(Math.random() * scripts.length)];
+            document.getElementById('praise-script').innerText = randomScript;
+            document.getElementById('praise-modal').classList.remove('hidden');
+        }
+
+        function closePraiseModal() {
+            document.getElementById('praise-modal').classList.add('hidden');
+        }
+
+        // FILTER TIME BLOCKS
+        function filterTasks(block) {
+            currentFilter = block;
+            document.querySelectorAll('.time-tab').forEach(b => {
+                b.classList.remove('bg-indigo-600', 'text-white');
+                b.classList.add('bg-slate-700', 'text-slate-300');
+            });
+
+            const activeTab = document.getElementById(`tab-${block}`);
+            if (activeTab) {
+                activeTab.classList.remove('bg-slate-700', 'text-slate-300');
+                activeTab.classList.add('bg-indigo-600', 'text-white');
+            }
+
+            renderTasks();
+        }
+
+        // ROSTER MODAL CONTROLS
+        function openRosterModal() {
+            const listContainer = document.getElementById('modal-staff-list');
+            listContainer.innerHTML = '';
+
+            staffRoster.forEach((staff, index) => {
+                listContainer.innerHTML += `
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
+                        <div>
+                            <div class="font-bold text-white">${staff.name}</div>
+                            <div class="text-slate-400 text-[10px]">${staff.role}</div>
+                        </div>
+                        <select id="staff-status-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
+                            <option value="ON_DUTY" ${staff.status === 'ON_DUTY' ? 'selected' : ''}>On Duty</option>
+                            <option value="SICK" ${staff.status === 'SICK' ? 'selected' : ''}>Sick / Called Off</option>
+                            <option value="NIGHT_DUTY" ${staff.status === 'NIGHT_DUTY' ? 'selected' : ''}>Night Duty</option>
+                        </select>
+                    </div>
+                `;
+            });
+
+            document.getElementById('roster-modal').classList.remove('hidden');
+        }
+
+        function closeRosterModal() {
+            document.getElementById('roster-modal').classList.add('hidden');
+        }
+
+        function saveRosterChanges() {
+            staffRoster.forEach((staff, index) => {
+                const select = document.getElementById(`staff-status-${index}`);
+                if (select) {
+                    staff.status = select.value;
+                }
+            });
+
+            saveState();
+            renderStaffList();
+            renderTasks();
+            closeRosterModal();
+        }
+
+        // LOCALSTORAGE PERSISTENCE
+        function saveState() {
+            localStorage.setItem('menlo_tasks_v1', JSON.stringify(masterTasks));
+            localStorage.setItem('menlo_roster_v1', JSON.stringify(staffRoster));
+        }
+
+        function loadSavedState() {
+            const savedTasks = localStorage.getItem('menlo_tasks_v1');
+            const savedRoster = localStorage.getItem('menlo_roster_v1');
+
+            if (savedTasks) masterTasks = JSON.parse(savedTasks);
+            if (savedRoster) staffRoster = JSON.parse(savedRoster);
+        }
+
+        function resetShiftData() {
+            if (confirm("Reset all checkboxes and shift sign-offs for a new shift?")) {
+                masterTasks.forEach(t => t.completed = false);
+                saveState();
+                renderTasks();
+            }
+        }
+    </script>
+</body>
+</html>
