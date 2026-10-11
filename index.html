@@ -1,6 +1,4 @@
-Asuquo Duke TL
-<!DOCTYPE html>
-<html lang="en">
+ASUQUO DUKE<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -52,11 +50,11 @@ Asuquo Duke TL
         <!-- LEFT SIDEBAR -->
         <div class="lg:col-span-1 space-y-6">
 
-            <!-- DYNAMIC ON-DUTY STAFF -->
+            <!-- DYNAMIC ON-DUTY & SLEEPOVER STAFF -->
             <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-md">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
-                        <i class="fa-solid fa-users text-indigo-400"></i> Floor Staff On-Duty
+                        <i class="fa-solid fa-users text-indigo-400"></i> Shift Roster
                     </h2>
                     <span id="active-staff-count" class="bg-indigo-900/80 text-indigo-200 text-xs px-2 py-0.5 rounded-full font-mono">0 Active</span>
                 </div>
@@ -170,6 +168,7 @@ Asuquo Duke TL
                         <select id="new-staff-resident" class="bg-slate-800 border border-slate-600 rounded p-2 text-xs text-white">
                             <option value="James (G0061)">James (G0061)</option>
                             <option value="Matthew (G0057)">Matthew (G0057)</option>
+                            <option value="Sleep Over">Sleep Over</option>
                             <option value="Governance & Floor">Governance & Floor</option>
                             <option value="Night Duty">Night Duty</option>
                         </select>
@@ -231,14 +230,14 @@ Asuquo Duke TL
                 { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'John Oluwole', role: 'HCA', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'John Oluwole', role: 'HCA', status: 'SLEEPOVER', resident: 'Sleep Over' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
             3: [
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
-                { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Elenora Fetter', role: 'SSW', status: 'SLEEPOVER', resident: 'Sleep Over' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
             4: [
@@ -246,6 +245,7 @@ Asuquo Duke TL
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
                 { name: 'Kingsley Ebong', role: 'HCA', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'John Oluwole', role: 'HCA', status: 'SLEEPOVER', resident: 'Sleep Over' },
                 { name: 'Alejandra Molloy', role: 'RCW', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
             5: [
@@ -254,12 +254,14 @@ Asuquo Duke TL
                 { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Kingsley Ebong', role: 'HCA', status: 'SLEEPOVER', resident: 'Sleep Over' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
             6: [
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Paige Forde', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
                 { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Kingsley Ebong', role: 'HCA', status: 'SLEEPOVER', resident: 'Sleep Over' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
             0: [
@@ -345,7 +347,17 @@ Asuquo Duke TL
             document.getElementById('active-staff-count').innerText = `${activeStaff.length} On Floor`;
 
             roster.forEach(staff => {
-                let badgeColor = staff.status === 'ON_DUTY' ? 'bg-emerald-950/80 border-emerald-700 text-emerald-200' : (staff.status === 'SICK' ? 'bg-rose-950/80 border-rose-700 text-rose-300' : 'bg-indigo-950/80 border-indigo-700 text-indigo-200');
+                let badgeColor = 'bg-slate-700 text-slate-300';
+                if (staff.status === 'ON_DUTY') {
+                    badgeColor = 'bg-emerald-950/80 border-emerald-700 text-emerald-200';
+                } else if (staff.status === 'SICK') {
+                    badgeColor = 'bg-rose-950/80 border-rose-700 text-rose-300';
+                } else if (staff.status === 'NIGHT_DUTY') {
+                    badgeColor = 'bg-indigo-950/80 border-indigo-700 text-indigo-200';
+                } else if (staff.status === 'SLEEPOVER' || staff.resident === 'Sleep Over') {
+                    badgeColor = 'bg-purple-950/80 border-purple-700 text-purple-200';
+                }
+
                 container.innerHTML += `
                     <div class="p-2.5 rounded-lg border ${badgeColor} flex justify-between items-center text-xs">
                         <div>
@@ -526,12 +538,14 @@ Asuquo Duke TL
                             <select id="staff-resident-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
                                 <option value="James (G0061)" ${staff.resident.includes('G0061') ? 'selected' : ''}>James (G0061)</option>
                                 <option value="Matthew (G0057)" ${staff.resident.includes('G0057') ? 'selected' : ''}>Matthew (G0057)</option>
+                                <option value="Sleep Over" ${staff.resident === 'Sleep Over' ? 'selected' : ''}>Sleep Over</option>
                                 <option value="Governance & Floor" ${staff.resident.includes('Governance') || staff.resident.includes('General') ? 'selected' : ''}>Governance & Floor</option>
                                 <option value="Night Duty" ${staff.resident.includes('Night') ? 'selected' : ''}>Night Duty</option>
                             </select>
 
                             <select id="staff-status-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
                                 <option value="ON_DUTY" ${staff.status === 'ON_DUTY' ? 'selected' : ''}>On Duty</option>
+                                <option value="SLEEPOVER" ${staff.status === 'SLEEPOVER' ? 'selected' : ''}>Sleep Over</option>
                                 <option value="SICK" ${staff.status === 'SICK' ? 'selected' : ''}>Sick / Called Off</option>
                                 <option value="NIGHT_DUTY" ${staff.status === 'NIGHT_DUTY' ? 'selected' : ''}>Night Duty</option>
                             </select>
@@ -572,10 +586,14 @@ Asuquo Duke TL
             const dateStr = targetDate.toISOString().split('T')[0];
             const roster = getRosterForDate(targetDate);
 
+            let calculatedStatus = 'ON_DUTY';
+            if (residentSelect.value === 'Night Duty') calculatedStatus = 'NIGHT_DUTY';
+            if (residentSelect.value === 'Sleep Over') calculatedStatus = 'SLEEPOVER';
+
             roster.push({
                 name: name,
                 role: role,
-                status: residentSelect.value === 'Night Duty' ? 'NIGHT_DUTY' : 'ON_DUTY',
+                status: calculatedStatus,
                 resident: residentSelect.value
             });
 
