@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+Understood! Pantoprazole is administered alone at 08:00 while James is still in bed, and Medikinet is moved to the 08:30 morning line alongside the blister pack medications.   Here is the updated code for index.html with that correction applied to both the 08:00 and 08:30 medication lines:HTML<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,26 +22,30 @@
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wide text-white">MENLO HOUSE FLIGHT DECK</h1>
-                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Operational Command & Governance</p>
+                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Daily Rollover Command Engine</p>
                 </div>
             </div>
 
+            <!-- DAY VIEW TOGGLE (TODAY / TOMORROW) -->
             <div class="flex items-center space-x-3">
-                <div class="bg-slate-700/60 px-3 py-1.5 rounded-md border border-slate-600 text-right">
-                    <div id="current-date" class="text-sm font-semibold text-slate-200">Monday, 12 Oct 2026</div>
-                    <div id="shift-leader" class="text-xs text-emerald-400 font-mono">TL: Asuquo Duke</div>
+                <div class="bg-slate-900 p-1 rounded-lg border border-slate-700 flex gap-1">
+                    <button onclick="switchDayView('TODAY')" id="view-today-btn" class="bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-md transition shadow">Today</button>
+                    <button onclick="switchDayView('TOMORROW')" id="view-tomorrow-btn" class="text-slate-400 hover:text-white font-bold text-xs px-3 py-1.5 rounded-md transition">Tomorrow</button>
                 </div>
+
+                <div class="bg-slate-700/60 px-3 py-1.5 rounded-md border border-slate-600 text-right">
+                    <div id="current-date-display" class="text-xs font-bold text-slate-200 font-mono">Loading...</div>
+                    <div id="shift-leader" class="text-[10px] text-emerald-400 font-mono">TL: Asuquo Duke</div>
+                </div>
+
                 <button onclick="openRosterModal()" class="bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
-                    <i class="fa-solid fa-user-gear text-sm"></i> Manage Roster / Sick Calls
-                </button>
-                <button onclick="resetShiftData()" class="bg-slate-700 hover:bg-slate-600 text-slate-300 font-medium text-xs px-2.5 py-2 rounded-lg transition border border-slate-600" title="Reset Shift Checkbox State">
-                    <i class="fa-solid fa-rotate-right"></i>
+                    <i class="fa-solid fa-user-gear text-sm"></i> Sick Calls / Swaps
                 </button>
             </div>
         </div>
     </header>
 
-    <!-- MAIN CONTENT -->
+    <!-- MAIN DASHBOARD LAYOUT -->
     <main class="max-w-7xl mx-auto px-4 mt-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
 
         <!-- LEFT SIDEBAR -->
@@ -58,36 +62,50 @@
                 <div id="staff-list-container" class="space-y-2"></div>
             </div>
 
-            <!-- CRITICAL DIETARY & CARE SAFEGUARDS -->
+            <!-- CRITICAL HOUSE SAFEGUARDS -->
             <div class="bg-amber-950/40 border border-amber-800/60 rounded-xl p-4 shadow-md">
                 <div class="flex items-center gap-2 text-amber-400 mb-2">
                     <i class="fa-solid fa-shield-cat text-lg"></i>
                     <h3 class="text-sm font-bold uppercase tracking-wider">House Safeguards</h3>
                 </div>
                 <ul class="text-xs text-amber-200 space-y-2 leading-relaxed">
-                    <li>🚫 <strong>G0057 Car:</strong> DO NOT use chemicals/sprays on car perspex glass!</li>
-                    <li>🧅 <strong>G0061 Diet:</strong> DO NOT buy frozen mixed veggies with onion!</li>
+                    <li>🚫 <strong>G0057 Car:</strong> DO NOT use chemicals/sprays on car perspex glass![cite: 12]</li>
+                    <li>🧅 <strong>G0061 Diet:</strong> DO NOT buy frozen mixed veggies with onion![cite: 12]</li>
                 </ul>
             </div>
 
-            <!-- GOVERNANCE CADENCE TARGET -->
+            <!-- DYNAMIC GOVERNANCE CADENCE TARGET -->
             <div class="bg-indigo-950/40 border border-indigo-800/60 rounded-xl p-4 shadow-md">
                 <div class="flex items-center gap-2 text-indigo-300 mb-2">
                     <i class="fa-solid fa-clipboard-check text-lg"></i>
-                    <h3 class="text-sm font-bold uppercase tracking-wider">Governance Cadence</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-wider">Governance Target</h3>
                 </div>
                 <div id="governance-target-content" class="text-xs text-slate-300 space-y-2"></div>
             </div>
 
-            <!-- MANDATORY DIRECTIVE -->
-            <div class="bg-rose-950/40 border border-rose-800/60 rounded-xl p-4 shadow-md">
-                <div class="flex items-center gap-2 text-rose-400 mb-2">
-                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
-                    <h3 class="text-sm font-bold uppercase tracking-wider">Mandatory Priority</h3>
-                </div>
-                <div class="text-xs text-rose-200 leading-relaxed font-medium">
-                    <span class="text-amber-300 font-bold">🚨 PHARMACY STATEMENT OF ACCOUNT:</span> Obtain official Statement of Account for James (G0061) from the pharmacy today.
-                </div>
+            <!-- TL DESK AUDIT WINDOW ANCHORS -->
+            <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-md">
+                <h3 class="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-2">
+                    <i class="fa-solid fa-clock-rotate-left text-amber-400"></i> TL Audit Anchors
+                </h3>
+                <ul class="text-xs space-y-2 font-mono">
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">12:00 Desk Audit</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">15:00 Desk Audit</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">18:00 Desk Audit</span>
+                        <span class="text-emerald-400 font-bold">5 Min Check</span>
+                    </li>
+                    <li class="flex justify-between items-center bg-slate-900/60 p-2 rounded border border-slate-700">
+                        <span class="text-slate-300">21:00 Handover Audit</span>
+                        <span class="text-emerald-400 font-bold">Sign Off</span>
+                    </li>
+                </ul>
             </div>
         </div>
 
@@ -103,13 +121,13 @@
                 <button onclick="filterTasks('BLOCK4')" id="tab-BLOCK4" class="time-tab bg-slate-700 hover:bg-slate-600 text-slate-300 text-xs font-bold px-4 py-2 rounded-lg transition">Block 4 (20:00–22:00)</button>
             </div>
 
-            <!-- TASK CARDS -->
+            <!-- TASK CARDS CONTAINER -->
             <div id="tasks-container" class="space-y-4"></div>
 
         </div>
     </main>
 
-    <!-- MODAL: ROSTER OVERRIDE -->
+    <!-- MODAL: SICK CALL MANAGER -->
     <div id="roster-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
         <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl">
             <div class="bg-slate-900 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
@@ -154,6 +172,9 @@
     </div>
 
     <script>
+        let selectedDayOffset = 0; // 0 = Today, 1 = Tomorrow
+        let currentFilter = 'ALL';
+
         let staffRoster = [
             { id: 'S1', name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
             { id: 'S2', name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
@@ -161,40 +182,125 @@
             { id: 'S4', name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
         ];
 
-        let masterTasks = [
-            // BLOCK 1: 08:00 - 12:00
-            { id: 'T1', block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Pantoprazole & Medikinet while in bed.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T2', block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack Meds', desc: 'Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T3', block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'High-five/palm slap greeting. Morning hygiene & Kardex meds.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-            { id: 'T4', block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Facilitate 09:30 AM departure for Day Service.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-            { id: 'T5', block: 'BLOCK1', time: '10:30', title: '🚨 Pharmacy Statement Collection', desc: 'Collect official Statement of Account for James (G0061) from pharmacy.', resident: 'General', defaultStaff: 'Alejandra Molloy', completed: false },
-            { id: 'T6', block: 'BLOCK1', time: '11:00', title: 'Monthly Governance Task #10 & #12', desc: 'Inspect Home Heating Oil level and Generator Fuel Tank.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false },
-
-            // BLOCK 2: 12:00 - 16:00
-            { id: 'T7', block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T8', block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Digestive Enzymes immediately prior to lunch. Log Movicol.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T9', block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Uninterrupted quiet period (tablet, sensory room, or nap).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-
-            // BLOCK 3: 16:00 - 20:00
-            { id: 'T10', block: 'BLOCK3', time: '16:30', title: 'James (G0061) Supermac\'s Chips Outing', desc: 'Community outing for James\'s Monday Supermac\'s fries treat!', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T11', block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate Matthew\'s scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-            { id: 'T12', block: 'BLOCK3', time: '17:00', title: 'James (G0061) Evening Meds', desc: 'Medikinet, Domeridle, Desunin, Olanzapine, Pantoprazole (17:30).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T13', block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-
-            // BLOCK 4: 20:00 - 22:00
-            { id: 'T14', block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-            { id: 'T15', block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Kardex evening meds with fluids. Pajamas transition.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-            { id: 'T16', block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Progress notes for G0061 & G0057. 2-min desk reset and WhatsApp updates.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false }
-        ];
-
-        let currentFilter = 'ALL';
+        const governanceMatrix = {
+            1: "Task #10: Home Heating Oil Check & Task #12: Generator Fuel Tank Inspection.",
+            3: "Task #3: Emergency Supplies Audit (2 Heaters, 3 Torches, Blankets, Expiry Dates).",
+            5: "Task #4: Monthly Fire Drill Execution (G0061/G0057) & CMMS Sign-off.",
+            7: "Task #14: Western Hygiene Stock Audit & Order Submission.",
+            9: "Task #1: Resident House Meetings (OCC_Form_062).",
+            11: "Task #13: Resident Monthly Weights (G0061 & G0057).",
+            12: "Task #8: Medication Labels & Expiry Dates Audit.",
+            14: "Task #11: Full Medication Audit & Kardex Check.",
+            15: "Task #6: 3-Monthly Scripts & 6-Monthly Kardex Audit.",
+            16: "Task #2: Key Working Session (PDCA Goals).",
+            18: "Task #7: Indoor Window Cleaning & Task #9: Toilet Brushes Replacement.",
+            20: "Task #5: Folders & Documentation Audit.",
+            21: "Task #15: Petty Cash & Receipts Submission to Accounts."
+        };
 
         window.addEventListener('DOMContentLoaded', () => {
             loadSavedState();
+            updateDateDisplay();
             renderStaffList();
             renderGovernanceTarget();
             renderTasks();
         });
+
+        function getTargetDate() {
+            let d = new Date();
+            d.setDate(d.getDate() + selectedDayOffset);
+            return d;
+        }
+
+        function updateDateDisplay() {
+            const targetDate = getTargetDate();
+            const options = { weekday: 'long', day: 'numeric', month: 'short', year: 'numeric' };
+            const prefix = selectedDayOffset === 0 ? "TODAY: " : "TOMORROW: ";
+            document.getElementById('current-date-display').innerText = prefix + targetDate.toLocaleDateString('en-GB', options);
+        }
+
+        function switchDayView(view) {
+            selectedDayOffset = (view === 'TODAY') ? 0 : 1;
+
+            document.getElementById('view-today-btn').className = (selectedDayOffset === 0) 
+                ? 'bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-md transition shadow' 
+                : 'text-slate-400 hover:text-white font-bold text-xs px-3 py-1.5 rounded-md transition';
+
+            document.getElementById('view-tomorrow-btn').className = (selectedDayOffset === 1) 
+                ? 'bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-md transition shadow' 
+                : 'text-slate-400 hover:text-white font-bold text-xs px-3 py-1.5 rounded-md transition';
+
+            updateDateDisplay();
+            renderGovernanceTarget();
+            renderTasks();
+        }
+
+        // GENERATE DYNAMIC DAILY TASKS BASED ON REAL-WORLD DAY OF WEEK & DATE
+        function generateTasksForDate(targetDate) {
+            const dayOfWeek = targetDate.getDay(); // 0 = Sun, 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat
+            const dateStr = targetDate.toISOString().split('T')[0];
+
+            let tasks = [
+                // BLOCK 1: 08:00 - 12:00 (DAILY CLINICAL BASELINE)
+                { id: `T1_${dateStr}`, block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Pantoprazole while in bed (only Pentoprazole).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T2_${dateStr}`, block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack & Medikinet Meds', desc: 'Medikinet, Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T3_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'High-five/palm slap greeting. Morning hygiene & Kardex meds.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                { id: `T4_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'James (G0061) Intimate Care & Porridge', desc: 'Porridge with Digestive Enzymes. Support toilet, shower, shave, and outfit change.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+
+                // BLOCK 2: 12:00 - 16:00
+                { id: `T5_${dateStr}`, block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T6_${dateStr}`, block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Digestive Enzymes immediately prior to lunch. Log Movicol.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T7_${dateStr}`, block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Uninterrupted quiet period (tablet, sensory room, or nap).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+
+                // BLOCK 3: 16:00 - 20:00
+                { id: `T8_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'James (G0061) Evening Meds', desc: 'Medikinet, Domeridle, Desunin, Olanzapine, Pantoprazole (17:30).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T9_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+
+                // BLOCK 4: 20:00 - 22:00
+                { id: `T10_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                { id: `T11_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Kardex evening meds with fluids. Pajamas transition.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                { id: `T12_${dateStr}`, block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Progress notes for G0061 & G0057. 2-min desk reset and WhatsApp updates.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false }
+            ];
+
+            // INJECT DAY-SPECIFIC ACTIVITIES
+            if (dayOfWeek === 1) { // MONDAY
+                tasks.push(
+                    { id: `T_MON1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                    { id: `T_MON2_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) Supermac\'s Chips Treat Outing', desc: 'Community outing for James\'s Monday Supermac\'s fries treat!', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
+                    { id: `T_MON3_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
+                );
+            } else if (dayOfWeek === 2) { // TUESDAY
+                tasks.push(
+                    { id: `T_TUE1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                    { id: `T_TUE2_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate pre-booked Swimming (14:00 - 16:00).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                    { id: `T_TUE3_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) TV Guide & Mullan\'s Outing', desc: 'Visit Mullan\'s shop for magazine choice, Coke, and corn ice cream.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false }
+                );
+            } else if (dayOfWeek === 3) { // WEDNESDAY
+                tasks.push(
+                    { id: `T_WED1_${dateStr}`, block: 'BLOCK2', time: '12:00', title: '📞 Book Thursday Swimming for Matthew', desc: 'Call swimming pool to pre-book Matthew\'s Thursday 14:00 session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                    { id: `T_WED2_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
+                );
+            } else if (dayOfWeek === 4) { // THURSDAY
+                tasks.push(
+                    { id: `T_THU1_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate Swimming session (14:00 - 16:00).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
+                );
+            } else if (dayOfWeek === 5) { // FRIDAY
+                tasks.push(
+                    { id: `T_FRI1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
+                    { id: `T_FRI2_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Pizza Day Treat', desc: 'Ensure staff make or order pizza for James as part of his Friday routine.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false }
+                );
+            }
+
+            // RE-LOAD SAVED COMPLETION STATES IF PREVIOUSLY TOGGLED
+            const savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
+            tasks.forEach(t => {
+                if (savedStates[t.id] !== undefined) {
+                    t.completed = savedStates[t.id];
+                }
+            });
+
+            return tasks.sort((a, b) => a.time.localeCompare(b.time));
+        }
 
         function renderStaffList() {
             const container = document.getElementById('staff-list-container');
@@ -217,16 +323,29 @@
         }
 
         function renderGovernanceTarget() {
+            const targetDate = getTargetDate();
+            const dayNum = targetDate.getDate();
+            const target = governanceMatrix[dayNum] || "Folder standards, sleep log review & daily iPlanit compliance check.";
+
             document.getElementById('governance-target-content').innerHTML = `
-                <div class="font-bold text-amber-300">Day 1 Cadence Target:</div>
-                <p class="leading-relaxed">Task #10: Home Heating Oil Check & Task #12: Generator Fuel Tank Inspection.</p>
+                <div class="font-bold text-amber-300">Day ${dayNum} Cadence Target:</div>
+                <p class="leading-relaxed">${target}</p>
             `;
         }
 
         function renderTasks() {
             const container = document.getElementById('tasks-container');
             container.innerHTML = '';
-            const filteredTasks = currentFilter === 'ALL' ? masterTasks : masterTasks.filter(t => t.block === currentFilter);
+
+            const targetDate = getTargetDate();
+            const dailyTasks = generateTasksForDate(targetDate);
+
+            const filteredTasks = currentFilter === 'ALL' ? dailyTasks : dailyTasks.filter(t => t.block === currentFilter);
+
+            if (filteredTasks.length === 0) {
+                container.innerHTML = `<div class="bg-slate-800 p-8 rounded-xl text-center text-slate-400 text-xs">No tasks found for this time block.</div>`;
+                return;
+            }
 
             filteredTasks.forEach(task => {
                 let assignedStaffName = task.defaultStaff;
@@ -265,17 +384,23 @@
         }
 
         function toggleTask(taskId) {
-            const task = masterTasks.find(t => t.id === taskId);
-            if (!task) return;
-            task.completed = !task.completed;
-            saveState();
+            const targetDate = getTargetDate();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            let savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
+
+            savedStates[taskId] = !savedStates[taskId];
+            localStorage.setItem(`menlo_completed_${dateStr}`, JSON.stringify(savedStates));
+
             renderTasks();
-            if (task.completed) showPraiseModal(task);
+
+            if (savedStates[taskId]) {
+                showPraiseModal(taskId);
+            }
         }
 
-        function showPraiseModal(task) {
-            document.getElementById('praise-task-title').innerText = `${task.time} — ${task.title}`;
-            document.getElementById('praise-script').innerText = `"Thanks ${task.defaultStaff}, signing off ${task.title} on time keeps our HIQA compliance watertight!"`;
+        function showPraiseModal(taskId) {
+            document.getElementById('praise-task-title').innerText = `Task Signed Off`;
+            document.getElementById('praise-script').innerText = `"Fantastic job! Signing off micro-tasks on time keeps our team organized and HIQA compliance watertight!"`;
             document.getElementById('praise-modal').classList.remove('hidden');
         }
 
@@ -324,23 +449,12 @@
         }
 
         function saveState() {
-            localStorage.setItem('menlo_tasks_v2', JSON.stringify(masterTasks));
-            localStorage.setItem('menlo_roster_v2', JSON.stringify(staffRoster));
+            localStorage.setItem('menlo_roster_v3', JSON.stringify(staffRoster));
         }
 
         function loadSavedState() {
-            const savedTasks = localStorage.getItem('menlo_tasks_v2');
-            const savedRoster = localStorage.getItem('menlo_roster_v2');
-            if (savedTasks) masterTasks = JSON.parse(savedTasks);
+            const savedRoster = localStorage.getItem('menlo_roster_v3');
             if (savedRoster) staffRoster = JSON.parse(savedRoster);
-        }
-
-        function resetShiftData() {
-            if (confirm("Reset shift state?")) {
-                masterTasks.forEach(t => t.completed = false);
-                saveState();
-                renderTasks();
-            }
         }
     </script>
 </body>
