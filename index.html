@@ -1,4 +1,5 @@
-Duke Asuquo
+Asuquo Duke TL
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -22,7 +23,7 @@ Duke Asuquo
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wide text-white">MENLO HOUSE FLIGHT DECK</h1>
-                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Dynamic Roster Rollover Command Engine</p>
+                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Dynamic Roster & Shift Manager</p>
                 </div>
             </div>
 
@@ -39,7 +40,7 @@ Duke Asuquo
                 </div>
 
                 <button onclick="openRosterModal()" class="bg-amber-600 hover:bg-amber-500 text-white font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
-                    <i class="fa-solid fa-user-gear text-sm"></i> Sick Calls / Swaps
+                    <i class="fa-solid fa-user-gear text-sm"></i> Edit / Remove Staff
                 </button>
             </div>
         </div>
@@ -127,19 +128,62 @@ Duke Asuquo
         </div>
     </main>
 
-    <!-- MODAL: SICK CALL MANAGER -->
+    <!-- MODAL: EDIT STAFF / REMOVE / ADD MANAGER -->
     <div id="roster-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
-        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl">
+        <div class="bg-slate-800 border border-slate-700 rounded-xl w-full max-w-3xl overflow-hidden shadow-2xl">
             <div class="bg-slate-900 px-6 py-4 border-b border-slate-700 flex justify-between items-center">
                 <h3 class="text-base font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-user-pen text-amber-400"></i> Roster & Sick Call Manager
+                    <i class="fa-solid fa-user-gear text-amber-400"></i> Edit, Remove, or Swap Staff On Duty
                 </h3>
                 <button onclick="closeRosterModal()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div class="p-6 space-y-4 max-h-[70vh] overflow-y-auto" id="modal-staff-list"></div>
+            
+            <div class="p-6 space-y-6 max-h-[75vh] overflow-y-auto">
+                <div>
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-slate-300 mb-3">Current Staff Scheduled for Shift</h4>
+                    <div id="modal-staff-list" class="space-y-3"></div>
+                </div>
+
+                <!-- ADD OR SWAP STAFF DIRECTORY DROPDOWN -->
+                <div class="bg-slate-900 p-4 rounded-xl border border-slate-700 space-y-3">
+                    <h4 class="text-xs font-bold uppercase tracking-wider text-indigo-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-user-plus"></i> Select Staff from Master Directory to Add / Swap
+                    </h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <select id="directory-staff-select" class="bg-slate-800 border border-slate-600 rounded p-2 text-xs text-white font-medium">
+                            <option value="">-- Select Staff Member --</option>
+                            <option value="Asuquo Duke|Team Leader">Asuquo Duke (TL)</option>
+                            <option value="Ferhat Ciftci|PIC">Ferhat Ciftci (PIC)</option>
+                            <option value="Thomas Cherian|HCA">Thomas Cherian (HCA)</option>
+                            <option value="John Oluwole|HCA">John Oluwole (HCA)</option>
+                            <option value="Fiebar Chirambo|HCA">Fiebar Chirambo (HCA)</option>
+                            <option value="Elenora Fetter|SSW">Elenora Fetter (SSW)</option>
+                            <option value="Carla Agusto|RCW">Carla Agusto (RCW)</option>
+                            <option value="Paige Forde|RCW">Paige Forde (RCW)</option>
+                            <option value="Alejandra Molloy|RCW">Alejandra Molloy (RCW)</option>
+                            <option value="Kingsley Ebong|HCA">Kingsley Ebong (HCA)</option>
+                            <option value="Mary Molloy|RCW">Mary Molloy (RCW)</option>
+                            <option value="Rebecca Dennis|RCW">Rebecca Dennis (RCW)</option>
+                            <option value="Thomas (Relief)|Relief">Thomas (Relief Staff)</option>
+                        </select>
+
+                        <select id="new-staff-resident" class="bg-slate-800 border border-slate-600 rounded p-2 text-xs text-white">
+                            <option value="James (G0061)">James (G0061)</option>
+                            <option value="Matthew (G0057)">Matthew (G0057)</option>
+                            <option value="Governance & Floor">Governance & Floor</option>
+                            <option value="Night Duty">Night Duty</option>
+                        </select>
+
+                        <button onclick="addSelectedStaffFromDirectory()" class="bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 rounded-lg transition shadow">
+                            + Add to Shift
+                        </button>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-slate-900 px-6 py-3 border-t border-slate-700 flex justify-end gap-3">
                 <button onclick="closeRosterModal()" class="bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-lg">Cancel</button>
-                <button onclick="saveRosterChanges()" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow">Save & Re-balance</button>
+                <button onclick="saveRosterChanges()" class="bg-indigo-600 text-white text-xs font-semibold px-4 py-2 rounded-lg shadow">Save & Re-balance Flight Deck</button>
             </div>
         </div>
     </div>
@@ -175,59 +219,54 @@ Duke Asuquo
         let selectedDayOffset = 0; // 0 = Today, 1 = Tomorrow
         let currentFilter = 'ALL';
 
-        // MASTER ROSTER MATRIX FOR WEEK 3 (Oct 12 - Oct 18, 2026)
-        // Day index mapping: 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat, 0 = Sun
         const week3Roster = {
-            1: [ // MONDAY 12TH
+            1: [
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
-                { name: 'Alejandra Molloy', role: 'RCW (09:00-08:30)', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Alejandra Molloy', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            2: [ // TUESDAY 13TH
+            2: [
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
-                { name: 'Ferhat Ciftci', role: 'PIC (09:00-17:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'John Oluwole', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'John Oluwole', role: 'HCA', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            3: [ // WEDNESDAY 14TH
+            3: [
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
-                { name: 'Ferhat Ciftci', role: 'PIC (09:00-17:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
-                { name: 'Elenora Fetter', role: 'SSW (Sleepover)', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            4: [ // THURSDAY 15TH
+            4: [
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'Kingsley Ebong', role: 'HCA', status: 'ON_DUTY', resident: 'General Floor' },
-                { name: 'John Oluwole', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Kingsley Ebong', role: 'HCA', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Alejandra Molloy', role: 'RCW', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            5: [ // FRIDAY 16TH
-                { name: 'Thomas Cherian', role: 'Shift Leader (SL)', status: 'ON_DUTY', resident: 'Governance & Floor' },
+            5: [
+                { name: 'Thomas Cherian', role: 'Shift Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
-                { name: 'Ferhat Ciftci', role: 'PIC (09:00-16:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Ferhat Ciftci', role: 'PIC', status: 'ON_DUTY', resident: 'Management' },
                 { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'Kingsley Ebong', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            6: [ // SATURDAY 17TH
+            6: [
                 { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Paige Forde', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'General Floor' },
-                { name: 'Kingsley Ebong', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ],
-            0: [ // SUNDAY 18TH
-                { name: 'Thomas Cherian', role: 'Shift Leader (SL)', status: 'ON_DUTY', resident: 'Governance & Floor' },
+            0: [
+                { name: 'Thomas Cherian', role: 'Shift Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Paige Forde', role: 'RCW', status: 'ON_DUTY', resident: 'James (G0061)' },
                 { name: 'Alejandra Molloy', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-                { name: 'Thomas (Relief)', role: 'Relief Staff', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Thomas (Relief)', role: 'Relief Staff', status: 'ON_DUTY', resident: 'Governance & Floor' },
                 { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
             ]
         };
@@ -265,13 +304,9 @@ Duke Asuquo
             const dateStr = targetDate.toISOString().split('T')[0];
             const dayOfWeek = targetDate.getDay();
 
-            // Load saved roster overrides for this specific date if present
             const savedRoster = localStorage.getItem(`menlo_roster_${dateStr}`);
-            if (savedRoster) {
-                return JSON.parse(savedRoster);
-            }
+            if (savedRoster) return JSON.parse(savedRoster);
 
-            // Fallback to default week 3 roster array
             const defaultList = week3Roster[dayOfWeek] || week3Roster[1];
             return JSON.parse(JSON.stringify(defaultList));
         }
@@ -334,74 +369,61 @@ Duke Asuquo
             `;
         }
 
-        // GENERATE DYNAMIC DAILY TASKS WITH ACCURATE DYNAMIC STAFF ALLOCATION
         function generateTasksForDate(targetDate) {
             const dayOfWeek = targetDate.getDay();
             const dateStr = targetDate.toISOString().split('T')[0];
             const roster = getRosterForDate(targetDate);
 
-            // Dynamically identify staff assigned to James and Matthew for this date
-            const jamesStaff = roster.find(s => s.resident.includes('G0061')) || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
-            const matthewStaff = roster.find(s => s.resident.includes('G0057')) || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const jamesStaff = roster.find(s => s.resident.includes('G0061') && s.status === 'ON_DUTY') || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const matthewStaff = roster.find(s => s.resident.includes('G0057') && s.status === 'ON_DUTY') || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
             const tlStaff = roster.find(s => s.role.includes('TL') || s.role.includes('Shift Leader')) || { name: 'Shift Leader' };
 
             let tasks = [
-                // BLOCK 1: 08:00 - 12:00
                 { id: `T1_${dateStr}`, block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Pantoprazole while in bed (only Pentoprazole).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T2_${dateStr}`, block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack & Medikinet Meds', desc: 'Medikinet, Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T3_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'High-five/palm slap greeting. Morning hygiene & Kardex meds.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                 { id: `T4_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'James (G0061) Intimate Care & Porridge', desc: 'Porridge with Digestive Enzymes. Support toilet, shower, shave, and outfit change.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
-
-                // BLOCK 2: 12:00 - 16:00
                 { id: `T5_${dateStr}`, block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T6_${dateStr}`, block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Digestive Enzymes immediately prior to lunch. Log Movicol.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T7_${dateStr}`, block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Uninterrupted quiet period (tablet, sensory room, or nap).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
-
-                // BLOCK 3: 16:00 - 20:00
                 { id: `T8_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'James (G0061) Evening Meds', desc: 'Medikinet, Domeridle, Desunin, Olanzapine, Pantoprazole (17:30).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T9_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
-
-                // BLOCK 4: 20:00 - 22:00
                 { id: `T10_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                 { id: `T11_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Kardex evening meds with fluids. Pajamas transition.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                 { id: `T12_${dateStr}`, block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Progress notes for G0061 & G0057. 2-min desk reset and WhatsApp updates.', resident: 'General', defaultStaff: tlStaff.name, completed: false }
             ];
 
-            // INJECT DAY-SPECIFIC OUTINGS & ACTIVITIES
-            if (dayOfWeek === 1) { // MONDAY
+            if (dayOfWeek === 1) {
                 tasks.push(
                     { id: `T_MON1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                     { id: `T_MON2_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) Supermac\'s Chips Treat Outing', desc: 'Community outing for James\'s Monday Supermac\'s fries treat!', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
                     { id: `T_MON3_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
                 );
-            } else if (dayOfWeek === 2) { // TUESDAY
+            } else if (dayOfWeek === 2) {
                 tasks.push(
                     { id: `T_TUE1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                     { id: `T_TUE2_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate pre-booked Swimming (14:00 - 16:00).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                     { id: `T_TUE3_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) TV Guide & Mullan\'s Outing', desc: 'Visit Mullan\'s shop for magazine choice, Coke, and corn ice cream.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false }
                 );
-            } else if (dayOfWeek === 3) { // WEDNESDAY
+            } else if (dayOfWeek === 3) {
                 tasks.push(
                     { id: `T_WED1_${dateStr}`, block: 'BLOCK2', time: '12:00', title: '📞 Book Thursday Swimming for Matthew', desc: 'Call swimming pool to pre-book Matthew\'s Thursday 14:00 session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                     { id: `T_WED2_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
                 );
-            } else if (dayOfWeek === 4) { // THURSDAY
+            } else if (dayOfWeek === 4) {
                 tasks.push(
                     { id: `T_THU1_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate Swimming session (14:00 - 16:00).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
                 );
-            } else if (dayOfWeek === 5) { // FRIDAY
+            } else if (dayOfWeek === 5) {
                 tasks.push(
                     { id: `T_FRI1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
                     { id: `T_FRI2_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Pizza Day Treat', desc: 'Ensure staff make or order pizza for James as part of his Friday routine.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false }
                 );
             }
 
-            // LOAD SAVED COMPLETION STATES
             const savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
             tasks.forEach(t => {
-                if (savedStates[t.id] !== undefined) {
-                    t.completed = savedStates[t.id];
-                }
+                if (savedStates[t.id] !== undefined) t.completed = savedStates[t.id];
             });
 
             return tasks.sort((a, b) => a.time.localeCompare(b.time));
@@ -467,10 +489,7 @@ Duke Asuquo
             localStorage.setItem(`menlo_completed_${dateStr}`, JSON.stringify(savedStates));
 
             renderTasks();
-
-            if (savedStates[taskId]) {
-                showPraiseModal(taskId);
-            }
+            if (savedStates[taskId]) showPraiseModal(taskId);
         }
 
         function showPraiseModal(taskId) {
@@ -497,16 +516,30 @@ Duke Asuquo
 
             roster.forEach((staff, index) => {
                 listContainer.innerHTML += `
-                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
-                        <div>
+                    <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex flex-col sm:flex-row gap-2 justify-between items-start sm:items-center text-xs">
+                        <div class="flex-1">
                             <div class="font-bold text-white">${staff.name}</div>
-                            <div class="text-slate-400 text-[10px]">${staff.role} • ${staff.resident}</div>
+                            <div class="text-slate-400 text-[10px]">${staff.role}</div>
                         </div>
-                        <select id="staff-status-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
-                            <option value="ON_DUTY" ${staff.status === 'ON_DUTY' ? 'selected' : ''}>On Duty</option>
-                            <option value="SICK" ${staff.status === 'SICK' ? 'selected' : ''}>Sick / Called Off</option>
-                            <option value="NIGHT_DUTY" ${staff.status === 'NIGHT_DUTY' ? 'selected' : ''}>Night Duty</option>
-                        </select>
+                        
+                        <div class="flex items-center gap-2 w-full sm:w-auto">
+                            <select id="staff-resident-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
+                                <option value="James (G0061)" ${staff.resident.includes('G0061') ? 'selected' : ''}>James (G0061)</option>
+                                <option value="Matthew (G0057)" ${staff.resident.includes('G0057') ? 'selected' : ''}>Matthew (G0057)</option>
+                                <option value="Governance & Floor" ${staff.resident.includes('Governance') || staff.resident.includes('General') ? 'selected' : ''}>Governance & Floor</option>
+                                <option value="Night Duty" ${staff.resident.includes('Night') ? 'selected' : ''}>Night Duty</option>
+                            </select>
+
+                            <select id="staff-status-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
+                                <option value="ON_DUTY" ${staff.status === 'ON_DUTY' ? 'selected' : ''}>On Duty</option>
+                                <option value="SICK" ${staff.status === 'SICK' ? 'selected' : ''}>Sick / Called Off</option>
+                                <option value="NIGHT_DUTY" ${staff.status === 'NIGHT_DUTY' ? 'selected' : ''}>Night Duty</option>
+                            </select>
+
+                            <button onclick="removeStaffMember(${index})" class="bg-rose-900/60 hover:bg-rose-700 text-rose-200 border border-rose-700 p-1.5 rounded transition" title="Remove Staff from Shift">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
             });
@@ -515,14 +548,52 @@ Duke Asuquo
 
         function closeRosterModal() { document.getElementById('roster-modal').classList.add('hidden'); }
 
+        function removeStaffMember(index) {
+            const targetDate = getTargetDate();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const roster = getRosterForDate(targetDate);
+
+            roster.splice(index, 1);
+            localStorage.setItem(`menlo_roster_${dateStr}`, JSON.stringify(roster));
+            openRosterModal();
+        }
+
+        function addSelectedStaffFromDirectory() {
+            const selectEl = document.getElementById('directory-staff-select');
+            const residentSelect = document.getElementById('new-staff-resident');
+
+            if (!selectEl.value) {
+                alert('Please select a staff member from the dropdown.');
+                return;
+            }
+
+            const [name, role] = selectEl.value.split('|');
+            const targetDate = getTargetDate();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const roster = getRosterForDate(targetDate);
+
+            roster.push({
+                name: name,
+                role: role,
+                status: residentSelect.value === 'Night Duty' ? 'NIGHT_DUTY' : 'ON_DUTY',
+                resident: residentSelect.value
+            });
+
+            localStorage.setItem(`menlo_roster_${dateStr}`, JSON.stringify(roster));
+            selectEl.value = '';
+            openRosterModal();
+        }
+
         function saveRosterChanges() {
             const targetDate = getTargetDate();
             const dateStr = targetDate.toISOString().split('T')[0];
             const roster = getRosterForDate(targetDate);
 
             roster.forEach((staff, index) => {
-                const select = document.getElementById(`staff-status-${index}`);
-                if (select) staff.status = select.value;
+                const statusSelect = document.getElementById(`staff-status-${index}`);
+                const residentSelect = document.getElementById(`staff-resident-${index}`);
+                if (statusSelect) staff.status = statusSelect.value;
+                if (residentSelect) staff.resident = residentSelect.value;
             });
 
             localStorage.setItem(`menlo_roster_${dateStr}`, JSON.stringify(roster));
