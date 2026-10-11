@@ -1,4 +1,6 @@
-TL: ASUQUO DUKE<html lang="en">
+TL: Asuquo Duke
+<!DOCTYPE html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -25,8 +27,12 @@ TL: ASUQUO DUKE<html lang="en">
                 </div>
             </div>
 
-            <!-- DAY VIEW TOGGLE (TODAY / TOMORROW) -->
+            <!-- DAY VIEW TOGGLE & HANDOVER PARSER BUTTON -->
             <div class="flex items-center space-x-3">
+                <button onclick="openHandoverModal()" class="bg-purple-600 hover:bg-purple-500 text-white font-medium text-xs px-3 py-2 rounded-lg transition flex items-center gap-1.5 shadow">
+                    <i class="fa-solid fa-wand-magic-sparkles text-sm"></i> Parse Handover / Diary
+                </button>
+
                 <div class="bg-slate-900 p-1 rounded-lg border border-slate-700 flex gap-1">
                     <button onclick="switchDayView('TODAY')" id="view-today-btn" class="bg-indigo-600 text-white font-bold text-xs px-3 py-1.5 rounded-md transition shadow">Today</button>
                     <button onclick="switchDayView('TOMORROW')" id="view-tomorrow-btn" class="text-slate-400 hover:text-white font-bold text-xs px-3 py-1.5 rounded-md transition">Tomorrow</button>
@@ -125,6 +131,36 @@ TL: ASUQUO DUKE<html lang="en">
 
         </div>
     </main>
+
+    <!-- MODAL: HANDOVER & DIARY PARSER -->
+    <div id="handover-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
+        <div class="bg-slate-800 border border-purple-600/60 rounded-xl w-full max-w-2xl overflow-hidden shadow-2xl">
+            <div class="bg-purple-950/80 px-6 py-4 border-b border-purple-800 flex justify-between items-center">
+                <h3 class="text-base font-bold text-purple-200 flex items-center gap-2">
+                    <i class="fa-solid fa-wand-magic-sparkles text-purple-400"></i> Handover & Communication Diary Parser
+                </h3>
+                <button onclick="closeHandoverModal()" class="text-purple-300 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            
+            <div class="p-6 space-y-4">
+                <p class="text-xs text-slate-300 leading-relaxed">
+                    Paste raw handover notes, phone calls, or diary entries below (line by line). The parser will automatically extract time, resident, and action items to update your Flight Deck!
+                </p>
+
+                <textarea id="handover-text-input" rows="6" placeholder="Example:
+- Matthew has GP appointment at 11:30 AM
+- James running low on Movicol, order from pharmacy at 14:00
+- Deep clean kitchen air fryer at 16:00" class="w-full bg-slate-900 border border-slate-700 rounded-lg p-3 text-xs text-slate-200 focus:outline-none focus:border-purple-500 font-mono"></textarea>
+            </div>
+
+            <div class="bg-slate-900 px-6 py-3 border-t border-slate-700 flex justify-end gap-3">
+                <button onclick="closeHandoverModal()" class="bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-lg">Cancel</button>
+                <button onclick="parseAndInjectHandoverTasks()" class="bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold px-5 py-2 rounded-lg shadow flex items-center gap-2">
+                    <i class="fa-solid fa-bolt"></i> Generate Tasks onto Flight Deck
+                </button>
+            </div>
+        </div>
+    </div>
 
     <!-- MODAL: EDIT STAFF / REMOVE / ADD MANAGER -->
     <div id="roster-modal" class="hidden fixed inset-0 modal-bg z-50 flex items-center justify-center p-4">
@@ -433,6 +469,10 @@ TL: ASUQUO DUKE<html lang="en">
                 );
             }
 
+            // LOAD DYNAMIC PARSED DIARY/HANDOVER TASKS FROM LOCAL STORAGE
+            const customDiaryTasks = JSON.parse(localStorage.getItem(`menlo_diary_tasks_${dateStr}`) || '[]');
+            tasks = tasks.concat(customDiaryTasks);
+
             const savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
             tasks.forEach(t => {
                 if (savedStates[t.id] !== undefined) t.completed = savedStates[t.id];
@@ -467,6 +507,7 @@ TL: ASUQUO DUKE<html lang="en">
 
                 const completedClass = task.completed ? 'completed-task bg-slate-900/40' : 'bg-slate-800 hover:border-slate-600';
                 const checkBtnColor = task.completed ? 'bg-emerald-600 text-white' : 'bg-slate-700 hover:bg-emerald-600 text-slate-300';
+                const isCustomBadge = task.isCustom ? `<span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-purple-900 text-purple-200">Diary / Handover</span>` : '';
 
                 container.innerHTML += `
                     <div class="border border-slate-700 rounded-xl p-4 transition shadow ${completedClass} flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -476,6 +517,7 @@ TL: ASUQUO DUKE<html lang="en">
                                 <div class="flex items-center gap-2">
                                     <h4 class="text-sm font-bold text-white">${task.title}</h4>
                                     <span class="text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-slate-700 text-slate-300">${task.resident}</span>
+                                    ${isCustomBadge}
                                 </div>
                                 <p class="text-xs text-slate-300 mt-1">${task.desc}</p>
                                 <div class="text-[11px] text-indigo-400 font-medium mt-2 flex items-center gap-1">
@@ -517,6 +559,88 @@ TL: ASUQUO DUKE<html lang="en">
             document.querySelectorAll('.time-tab').forEach(b => { b.classList.remove('bg-indigo-600', 'text-white'); b.classList.add('bg-slate-700', 'text-slate-300'); });
             document.getElementById(`tab-${block}`).classList.remove('bg-slate-700', 'text-slate-300');
             document.getElementById(`tab-${block}`).classList.add('bg-indigo-600', 'text-white');
+            renderTasks();
+        }
+
+        // HANDOVER PARSER MODAL & INTELLIGENCE
+        function openHandoverModal() {
+            document.getElementById('handover-modal').classList.remove('hidden');
+        }
+
+        function closeHandoverModal() {
+            document.getElementById('handover-modal').classList.add('hidden');
+        }
+
+        function parseAndInjectHandoverTasks() {
+            const rawText = document.getElementById('handover-text-input').value.trim();
+            if (!rawText) {
+                alert("Please paste or type handover notes first.");
+                return;
+            }
+
+            const targetDate = getTargetDate();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const roster = getRosterForDate(targetDate);
+
+            const jamesStaff = roster.find(s => s.resident.includes('G0061') && s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const matthewStaff = roster.find(s => s.resident.includes('G0057') && s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const tlStaff = roster.find(s => s.role.includes('TL') || s.role.includes('Shift Leader')) || { name: 'Shift Leader' };
+
+            const lines = rawText.split('\n');
+            let parsedTasks = JSON.parse(localStorage.getItem(`menlo_diary_tasks_${dateStr}`) || '[]');
+
+            lines.forEach((line, index) => {
+                const cleanLine = line.replace(/^[-*•\d.]+\s*/, '').trim();
+                if (!cleanLine) return;
+
+                // Extract time if present (e.g. 11:30, 14:00, 4pm, 11am)
+                const timeMatch = cleanLine.match(/(\d{1,2}:\d{2}|\d{1,2}\s*(?:am|pm))/i);
+                let taskTime = timeMatch ? timeMatch[0] : '10:00';
+
+                // Format time to HH:MM standard
+                if (taskTime.toLowerCase().includes('pm') && !taskTime.includes(':')) {
+                    const hour = parseInt(taskTime);
+                    taskTime = hour < 12 ? `${hour + 12}:00` : `${hour}:00`;
+                } else if (taskTime.toLowerCase().includes('am') && !taskTime.includes(':')) {
+                    const hour = parseInt(taskTime);
+                    taskTime = hour < 10 ? `0${hour}:00` : `${hour}:00`;
+                }
+
+                // Identify Resident & Staff Assignment
+                let targetResident = 'General';
+                let assignedStaff = tlStaff.name;
+
+                if (/matthew|g0057|mm/i.test(cleanLine)) {
+                    targetResident = 'G0057';
+                    assignedStaff = matthewStaff.name;
+                } else if (/james|g0061|jd/i.test(cleanLine)) {
+                    targetResident = 'G0061';
+                    assignedStaff = jamesStaff.name;
+                }
+
+                // Determine Time Block
+                const hourNum = parseInt(taskTime.split(':')[0]);
+                let taskBlock = 'BLOCK1';
+                if (hourNum >= 12 && hourNum < 16) taskBlock = 'BLOCK2';
+                else if (hourNum >= 16 && hourNum < 20) taskBlock = 'BLOCK3';
+                else if (hourNum >= 20) taskBlock = 'BLOCK4';
+
+                parsedTasks.push({
+                    id: `T_CUSTOM_${dateStr}_${Date.now()}_${index}`,
+                    block: taskBlock,
+                    time: taskTime,
+                    title: `Handover Directive: ${cleanLine.substring(0, 35)}...`,
+                    desc: cleanLine,
+                    resident: targetResident,
+                    defaultStaff: assignedStaff,
+                    completed: false,
+                    isCustom: true
+                });
+            });
+
+            localStorage.setItem(`menlo_diary_tasks_${dateStr}`, JSON.stringify(parsedTasks));
+            document.getElementById('handover-text-input').value = '';
+            closeHandoverModal();
             renderTasks();
         }
 
