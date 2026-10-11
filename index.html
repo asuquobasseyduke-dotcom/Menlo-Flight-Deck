@@ -1,9 +1,9 @@
-DUKE A.<!DOCTYPE html>
+Duke Asuquo
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Menlo House — Shift Planner</title>
+    <title>Menlo House — Flight Deck Command System</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
@@ -22,7 +22,7 @@ DUKE A.<!DOCTYPE html>
                 </div>
                 <div>
                     <h1 class="text-xl font-bold tracking-wide text-white">MENLO HOUSE FLIGHT DECK</h1>
-                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Daily Rollover Command Engine</p>
+                    <p class="text-xs text-indigo-300 font-medium">Orchard Community Care • Dynamic Roster Rollover Command Engine</p>
                 </div>
             </div>
 
@@ -51,13 +51,13 @@ DUKE A.<!DOCTYPE html>
         <!-- LEFT SIDEBAR -->
         <div class="lg:col-span-1 space-y-6">
 
-            <!-- ON-DUTY STAFF -->
+            <!-- DYNAMIC ON-DUTY STAFF -->
             <div class="bg-slate-800 border border-slate-700 rounded-xl p-4 shadow-md">
                 <div class="flex justify-between items-center mb-3">
                     <h2 class="text-sm font-bold tracking-wider text-slate-300 uppercase flex items-center gap-2">
                         <i class="fa-solid fa-users text-indigo-400"></i> Floor Staff On-Duty
                     </h2>
-                    <span id="active-staff-count" class="bg-indigo-900/80 text-indigo-200 text-xs px-2 py-0.5 rounded-full font-mono">3 Active</span>
+                    <span id="active-staff-count" class="bg-indigo-900/80 text-indigo-200 text-xs px-2 py-0.5 rounded-full font-mono">0 Active</span>
                 </div>
                 <div id="staff-list-container" class="space-y-2"></div>
             </div>
@@ -175,12 +175,62 @@ DUKE A.<!DOCTYPE html>
         let selectedDayOffset = 0; // 0 = Today, 1 = Tomorrow
         let currentFilter = 'ALL';
 
-        let staffRoster = [
-            { id: 'S1', name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
-            { id: 'S2', name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
-            { id: 'S3', name: 'Alejandra Molloy', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
-            { id: 'S4', name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
-        ];
+        // MASTER ROSTER MATRIX FOR WEEK 3 (Oct 12 - Oct 18, 2026)
+        // Day index mapping: 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat, 0 = Sun
+        const week3Roster = {
+            1: [ // MONDAY 12TH
+                { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Alejandra Molloy', role: 'RCW (09:00-08:30)', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            2: [ // TUESDAY 13TH
+                { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Ferhat Ciftci', role: 'PIC (09:00-17:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'John Oluwole', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            3: [ // WEDNESDAY 14TH
+                { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Ferhat Ciftci', role: 'PIC (09:00-17:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Elenora Fetter', role: 'SSW (Sleepover)', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            4: [ // THURSDAY 15TH
+                { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Kingsley Ebong', role: 'HCA', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'John Oluwole', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Alejandra Molloy', role: 'RCW', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            5: [ // FRIDAY 16TH
+                { name: 'Thomas Cherian', role: 'Shift Leader (SL)', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Asuquo Duke', role: 'Team Leader', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Ferhat Ciftci', role: 'PIC (09:00-16:00)', status: 'ON_DUTY', resident: 'Management' },
+                { name: 'Elenora Fetter', role: 'SSW', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Carla Agusto', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Kingsley Ebong', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            6: [ // SATURDAY 17TH
+                { name: 'Thomas Cherian', role: 'HCA', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Paige Forde', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Rebecca Dennis', role: 'RCW', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Kingsley Ebong', role: 'HCA (Sleepover)', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ],
+            0: [ // SUNDAY 18TH
+                { name: 'Thomas Cherian', role: 'Shift Leader (SL)', status: 'ON_DUTY', resident: 'Governance & Floor' },
+                { name: 'Paige Forde', role: 'RCW', status: 'ON_DUTY', resident: 'James (G0061)' },
+                { name: 'Alejandra Molloy', role: 'RCW', status: 'ON_DUTY', resident: 'Matthew (G0057)' },
+                { name: 'Thomas (Relief)', role: 'Relief Staff', status: 'ON_DUTY', resident: 'General Floor' },
+                { name: 'Fiebar Chirambo', role: 'HCA', status: 'NIGHT_DUTY', resident: 'Night Duty' }
+            ]
+        };
 
         const governanceMatrix = {
             1: "Task #10: Home Heating Oil Check & Task #12: Generator Fuel Tank Inspection.",
@@ -199,7 +249,6 @@ DUKE A.<!DOCTYPE html>
         };
 
         window.addEventListener('DOMContentLoaded', () => {
-            loadSavedState();
             updateDateDisplay();
             renderStaffList();
             renderGovernanceTarget();
@@ -210,6 +259,21 @@ DUKE A.<!DOCTYPE html>
             let d = new Date();
             d.setDate(d.getDate() + selectedDayOffset);
             return d;
+        }
+
+        function getRosterForDate(targetDate) {
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const dayOfWeek = targetDate.getDay();
+
+            // Load saved roster overrides for this specific date if present
+            const savedRoster = localStorage.getItem(`menlo_roster_${dateStr}`);
+            if (savedRoster) {
+                return JSON.parse(savedRoster);
+            }
+
+            // Fallback to default week 3 roster array
+            const defaultList = week3Roster[dayOfWeek] || week3Roster[1];
+            return JSON.parse(JSON.stringify(defaultList));
         }
 
         function updateDateDisplay() {
@@ -231,84 +295,21 @@ DUKE A.<!DOCTYPE html>
                 : 'text-slate-400 hover:text-white font-bold text-xs px-3 py-1.5 rounded-md transition';
 
             updateDateDisplay();
+            renderStaffList();
             renderGovernanceTarget();
             renderTasks();
         }
 
-        // GENERATE DYNAMIC DAILY TASKS BASED ON REAL-WORLD DAY OF WEEK & DATE
-        function generateTasksForDate(targetDate) {
-            const dayOfWeek = targetDate.getDay(); // 0 = Sun, 1 = Mon, 2 = Tue, 3 = Wed, 4 = Thu, 5 = Fri, 6 = Sat
-            const dateStr = targetDate.toISOString().split('T')[0];
-
-            let tasks = [
-                // BLOCK 1: 08:00 - 12:00 (DAILY CLINICAL BASELINE)
-                { id: `T1_${dateStr}`, block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Pantoprazole while in bed (only Pentoprazole).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T2_${dateStr}`, block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack & Medikinet Meds', desc: 'Medikinet, Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T3_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'High-five/palm slap greeting. Morning hygiene & Kardex meds.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                { id: `T4_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'James (G0061) Intimate Care & Porridge', desc: 'Porridge with Digestive Enzymes. Support toilet, shower, shave, and outfit change.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-
-                // BLOCK 2: 12:00 - 16:00
-                { id: `T5_${dateStr}`, block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T6_${dateStr}`, block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Digestive Enzymes immediately prior to lunch. Log Movicol.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T7_${dateStr}`, block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Uninterrupted quiet period (tablet, sensory room, or nap).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-
-                // BLOCK 3: 16:00 - 20:00
-                { id: `T8_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'James (G0061) Evening Meds', desc: 'Medikinet, Domeridle, Desunin, Olanzapine, Pantoprazole (17:30).', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T9_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-
-                // BLOCK 4: 20:00 - 22:00
-                { id: `T10_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                { id: `T11_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Kardex evening meds with fluids. Pajamas transition.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                { id: `T12_${dateStr}`, block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Progress notes for G0061 & G0057. 2-min desk reset and WhatsApp updates.', resident: 'General', defaultStaff: 'Asuquo Duke', completed: false }
-            ];
-
-            // INJECT DAY-SPECIFIC ACTIVITIES
-            if (dayOfWeek === 1) { // MONDAY
-                tasks.push(
-                    { id: `T_MON1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                    { id: `T_MON2_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) Supermac\'s Chips Treat Outing', desc: 'Community outing for James\'s Monday Supermac\'s fries treat!', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false },
-                    { id: `T_MON3_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
-                );
-            } else if (dayOfWeek === 2) { // TUESDAY
-                tasks.push(
-                    { id: `T_TUE1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                    { id: `T_TUE2_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate pre-booked Swimming (14:00 - 16:00).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                    { id: `T_TUE3_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) TV Guide & Mullan\'s Outing', desc: 'Visit Mullan\'s shop for magazine choice, Coke, and corn ice cream.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false }
-                );
-            } else if (dayOfWeek === 3) { // WEDNESDAY
-                tasks.push(
-                    { id: `T_WED1_${dateStr}`, block: 'BLOCK2', time: '12:00', title: '📞 Book Thursday Swimming for Matthew', desc: 'Call swimming pool to pre-book Matthew\'s Thursday 14:00 session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                    { id: `T_WED2_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
-                );
-            } else if (dayOfWeek === 4) { // THURSDAY
-                tasks.push(
-                    { id: `T_THU1_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate Swimming session (14:00 - 16:00).', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false }
-                );
-            } else if (dayOfWeek === 5) { // FRIDAY
-                tasks.push(
-                    { id: `T_FRI1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: 'Alejandra Molloy', completed: false },
-                    { id: `T_FRI2_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Pizza Day Treat', desc: 'Ensure staff make or order pizza for James as part of his Friday routine.', resident: 'G0061', defaultStaff: 'Elenora Fetter', completed: false }
-                );
-            }
-
-            // RE-LOAD SAVED COMPLETION STATES IF PREVIOUSLY TOGGLED
-            const savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
-            tasks.forEach(t => {
-                if (savedStates[t.id] !== undefined) {
-                    t.completed = savedStates[t.id];
-                }
-            });
-
-            return tasks.sort((a, b) => a.time.localeCompare(b.time));
-        }
-
         function renderStaffList() {
+            const targetDate = getTargetDate();
+            const roster = getRosterForDate(targetDate);
             const container = document.getElementById('staff-list-container');
             container.innerHTML = '';
-            const activeStaff = staffRoster.filter(s => s.status === 'ON_DUTY');
+
+            const activeStaff = roster.filter(s => s.status === 'ON_DUTY');
             document.getElementById('active-staff-count').innerText = `${activeStaff.length} On Floor`;
 
-            staffRoster.forEach(staff => {
+            roster.forEach(staff => {
                 let badgeColor = staff.status === 'ON_DUTY' ? 'bg-emerald-950/80 border-emerald-700 text-emerald-200' : (staff.status === 'SICK' ? 'bg-rose-950/80 border-rose-700 text-rose-300' : 'bg-indigo-950/80 border-indigo-700 text-indigo-200');
                 container.innerHTML += `
                     <div class="p-2.5 rounded-lg border ${badgeColor} flex justify-between items-center text-xs">
@@ -333,11 +334,85 @@ DUKE A.<!DOCTYPE html>
             `;
         }
 
+        // GENERATE DYNAMIC DAILY TASKS WITH ACCURATE DYNAMIC STAFF ALLOCATION
+        function generateTasksForDate(targetDate) {
+            const dayOfWeek = targetDate.getDay();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const roster = getRosterForDate(targetDate);
+
+            // Dynamically identify staff assigned to James and Matthew for this date
+            const jamesStaff = roster.find(s => s.resident.includes('G0061')) || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const matthewStaff = roster.find(s => s.resident.includes('G0057')) || roster.find(s => s.status === 'ON_DUTY') || { name: 'Floor Staff' };
+            const tlStaff = roster.find(s => s.role.includes('TL') || s.role.includes('Shift Leader')) || { name: 'Shift Leader' };
+
+            let tasks = [
+                // BLOCK 1: 08:00 - 12:00
+                { id: `T1_${dateStr}`, block: 'BLOCK1', time: '08:00', title: 'James (G0061) In-Bed Morning Meds', desc: 'Pantoprazole while in bed (only Pentoprazole).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T2_${dateStr}`, block: 'BLOCK1', time: '08:30', title: 'James (G0061) Blister Pack & Medikinet Meds', desc: 'Medikinet, Domeridle (2), Sodium Valproate (1), Sona Multivite (1), Olanzapine (1).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T3_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'Matthew (G0057) Low-Arousal Greeting', desc: 'High-five/palm slap greeting. Morning hygiene & Kardex meds.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                { id: `T4_${dateStr}`, block: 'BLOCK1', time: '09:00', title: 'James (G0061) Intimate Care & Porridge', desc: 'Porridge with Digestive Enzymes. Support toilet, shower, shave, and outfit change.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+
+                // BLOCK 2: 12:00 - 16:00
+                { id: `T5_${dateStr}`, block: 'BLOCK2', time: '12:00', title: 'James (G0061) Mid-Day Domeridle', desc: 'Administer Domeridle (2nd line in blister pack).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T6_${dateStr}`, block: 'BLOCK2', time: '13:00', title: 'James (G0061) Lunch & Enzymes', desc: 'Digestive Enzymes immediately prior to lunch. Log Movicol.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T7_${dateStr}`, block: 'BLOCK2', time: '14:30', title: 'Matthew (G0057) Quiet / Sensory Window', desc: 'Uninterrupted quiet period (tablet, sensory room, or nap).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+
+                // BLOCK 3: 16:00 - 20:00
+                { id: `T8_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'James (G0061) Evening Meds', desc: 'Medikinet, Domeridle, Desunin, Olanzapine, Pantoprazole (17:30).', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T9_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Ursofalk & Dinner', desc: 'Administer Ursofalk + Digestive Enzyme + Dinner.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+
+                // BLOCK 4: 20:00 - 22:00
+                { id: `T10_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'James (G0061) Night Meds & PJ Routine', desc: 'Night blister pack (Amitriptyline, Epilim, Melatonin, Resolor, Afforex). Brush teeth/PJs.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                { id: `T11_${dateStr}`, block: 'BLOCK4', time: '20:00', title: 'Matthew (G0057) Night Meds & Nightwear', desc: 'Kardex evening meds with fluids. Pajamas transition.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                { id: `T12_${dateStr}`, block: 'BLOCK4', time: '21:00', title: 'iPlanit Notes & Office Reset', desc: 'Progress notes for G0061 & G0057. 2-min desk reset and WhatsApp updates.', resident: 'General', defaultStaff: tlStaff.name, completed: false }
+            ];
+
+            // INJECT DAY-SPECIFIC OUTINGS & ACTIVITIES
+            if (dayOfWeek === 1) { // MONDAY
+                tasks.push(
+                    { id: `T_MON1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                    { id: `T_MON2_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) Supermac\'s Chips Treat Outing', desc: 'Community outing for James\'s Monday Supermac\'s fries treat!', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false },
+                    { id: `T_MON3_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
+                );
+            } else if (dayOfWeek === 2) { // TUESDAY
+                tasks.push(
+                    { id: `T_TUE1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                    { id: `T_TUE2_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate pre-booked Swimming (14:00 - 16:00).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                    { id: `T_TUE3_${dateStr}`, block: 'BLOCK3', time: '16:30', title: 'James (G0061) TV Guide & Mullan\'s Outing', desc: 'Visit Mullan\'s shop for magazine choice, Coke, and corn ice cream.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false }
+                );
+            } else if (dayOfWeek === 3) { // WEDNESDAY
+                tasks.push(
+                    { id: `T_WED1_${dateStr}`, block: 'BLOCK2', time: '12:00', title: '📞 Book Thursday Swimming for Matthew', desc: 'Call swimming pool to pre-book Matthew\'s Thursday 14:00 session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                    { id: `T_WED2_${dateStr}`, block: 'BLOCK3', time: '17:00', title: 'Matthew (G0057) Reflexology Session', desc: 'Facilitate scheduled 17:00 PM Reflexology session.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
+                );
+            } else if (dayOfWeek === 4) { // THURSDAY
+                tasks.push(
+                    { id: `T_THU1_${dateStr}`, block: 'BLOCK2', time: '14:00', title: 'Matthew (G0057) Swimming Session', desc: 'Facilitate Swimming session (14:00 - 16:00).', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false }
+                );
+            } else if (dayOfWeek === 5) { // FRIDAY
+                tasks.push(
+                    { id: `T_FRI1_${dateStr}`, block: 'BLOCK1', time: '09:30', title: 'Matthew (G0057) Day Service Departure', desc: 'Prompt departure for Day Service at 09:30 AM.', resident: 'G0057', defaultStaff: matthewStaff.name, completed: false },
+                    { id: `T_FRI2_${dateStr}`, block: 'BLOCK3', time: '18:00', title: 'James (G0061) Pizza Day Treat', desc: 'Ensure staff make or order pizza for James as part of his Friday routine.', resident: 'G0061', defaultStaff: jamesStaff.name, completed: false }
+                );
+            }
+
+            // LOAD SAVED COMPLETION STATES
+            const savedStates = JSON.parse(localStorage.getItem(`menlo_completed_${dateStr}`) || '{}');
+            tasks.forEach(t => {
+                if (savedStates[t.id] !== undefined) {
+                    t.completed = savedStates[t.id];
+                }
+            });
+
+            return tasks.sort((a, b) => a.time.localeCompare(b.time));
+        }
+
         function renderTasks() {
             const container = document.getElementById('tasks-container');
             container.innerHTML = '';
 
             const targetDate = getTargetDate();
+            const roster = getRosterForDate(targetDate);
             const dailyTasks = generateTasksForDate(targetDate);
 
             const filteredTasks = currentFilter === 'ALL' ? dailyTasks : dailyTasks.filter(t => t.block === currentFilter);
@@ -349,11 +424,11 @@ DUKE A.<!DOCTYPE html>
 
             filteredTasks.forEach(task => {
                 let assignedStaffName = task.defaultStaff;
-                let staffObj = staffRoster.find(s => s.name === task.defaultStaff);
+                let staffObj = roster.find(s => s.name === task.defaultStaff);
 
                 if (staffObj && staffObj.status === 'SICK') {
-                    const available = staffRoster.filter(s => s.status === 'ON_DUTY');
-                    assignedStaffName = available.length > 0 ? `${available[0].name} (Re-assigned)` : 'TL Cover';
+                    const available = roster.filter(s => s.status === 'ON_DUTY');
+                    assignedStaffName = available.length > 0 ? `${available[0].name} (Re-assigned)` : 'Shift Leader Cover';
                 }
 
                 const completedClass = task.completed ? 'completed-task bg-slate-900/40' : 'bg-slate-800 hover:border-slate-600';
@@ -415,14 +490,17 @@ DUKE A.<!DOCTYPE html>
         }
 
         function openRosterModal() {
+            const targetDate = getTargetDate();
+            const roster = getRosterForDate(targetDate);
             const listContainer = document.getElementById('modal-staff-list');
             listContainer.innerHTML = '';
-            staffRoster.forEach((staff, index) => {
+
+            roster.forEach((staff, index) => {
                 listContainer.innerHTML += `
                     <div class="bg-slate-900 p-3 rounded-lg border border-slate-700 flex justify-between items-center text-xs">
                         <div>
                             <div class="font-bold text-white">${staff.name}</div>
-                            <div class="text-slate-400 text-[10px]">${staff.role}</div>
+                            <div class="text-slate-400 text-[10px]">${staff.role} • ${staff.resident}</div>
                         </div>
                         <select id="staff-status-${index}" class="bg-slate-800 text-slate-200 border border-slate-600 rounded px-2 py-1 text-xs font-medium">
                             <option value="ON_DUTY" ${staff.status === 'ON_DUTY' ? 'selected' : ''}>On Duty</option>
@@ -438,23 +516,19 @@ DUKE A.<!DOCTYPE html>
         function closeRosterModal() { document.getElementById('roster-modal').classList.add('hidden'); }
 
         function saveRosterChanges() {
-            staffRoster.forEach((staff, index) => {
+            const targetDate = getTargetDate();
+            const dateStr = targetDate.toISOString().split('T')[0];
+            const roster = getRosterForDate(targetDate);
+
+            roster.forEach((staff, index) => {
                 const select = document.getElementById(`staff-status-${index}`);
                 if (select) staff.status = select.value;
             });
-            saveState();
+
+            localStorage.setItem(`menlo_roster_${dateStr}`, JSON.stringify(roster));
             renderStaffList();
             renderTasks();
             closeRosterModal();
-        }
-
-        function saveState() {
-            localStorage.setItem('menlo_roster_v3', JSON.stringify(staffRoster));
-        }
-
-        function loadSavedState() {
-            const savedRoster = localStorage.getItem('menlo_roster_v3');
-            if (savedRoster) staffRoster = JSON.parse(savedRoster);
         }
     </script>
 </body>
